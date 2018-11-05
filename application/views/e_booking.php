@@ -16,7 +16,7 @@
                     <input type="hidden" name="events_id" id="events_id" value="<?php echo $events_id;?>">
                     <input type="hidden" name="booking_date" id="booking_date" value="">
 										<input type="hidden" name="start_time" id="start_time" value="">
-                    <input type="hidden" name="end_time" id="end_time" value=""> 
+                    <input type="hidden" name="end_time" id="end_time" value="">
                     <input type="hidden" name="booking_members" id="booking_members" value="">
 
 					<div class="row" id="change-event">
@@ -166,7 +166,10 @@
 							<div class="col-md-12">
 								<span class="remember-box checkbox">
 									<label>
-										<input type="radio" name="payment_method" value="btc_credit" checked="checked"><?php echo lang('e_bookings_payment_type_btc') ?>
+										<input type="radio" name="payment_method" value="btc_credit" checked="checked"> <?php echo lang('e_bookings_payment_type_btc') ?>
+										<br>
+										<br>
+										<input type="radio" name="payment_method" value="pay_by_courier"> <?php echo lang('e_bookings_payment_type_courier') ?>
 									</label>
 								</span>
 							</div>
