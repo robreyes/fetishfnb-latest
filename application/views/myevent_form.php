@@ -223,7 +223,7 @@
                               <div class="col-sm-3 input-join padding-0"><?php echo form_dropdown($timeslot['timeslot_end_time_2']);?></div>
                               <div class="col-sm-3 input-join padding-0"><?php echo form_dropdown($timeslot['timeslot_end_time_3']);?></div>
                               <div class="col-sm-2 input-join padding-0" style="padding-left:15px;"><?php echo form_input($timeslot['timeslot_capacity']);?></div>
-                              <div class="col-sm-1 input-join padding-0"><a class="timeslot_rem" href="JavaScript:void(0);" data-timeslot="<?php echo bcadd($key, 1)?>"><i class="fa fa-trash aria-hidden="true"></i></a></div>
+                              <div class="col-sm-1 input-join padding-0"><a class="timeslot_rem" href="JavaScript:void(0);" data-timeslot="<?php echo bcadd($key, 1)?>"><i class="fa fa-trash" aria-hidden="true"></i></a></div>
                             </div>
                           </div>
                        </div>

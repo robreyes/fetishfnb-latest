@@ -174,7 +174,7 @@ class Charge extends Private_Controller {
 
 				$this->btc_model->add_btc_transaction($btc_data);
 
-				// if event the use event bookings model
+				// if event then use event bookings model
 				if(isset($_SESSION['bookings']['is_event']))
 				$_SESSION['bookings']['transactions_id']    = $this->ebookings_model->save_transactions($data);
 				$_SESSION['bookings']['payment_gateway']    = 'btc';

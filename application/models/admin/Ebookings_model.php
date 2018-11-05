@@ -316,6 +316,13 @@ class Ebookings_model extends CI_Model {
         return $this->db->insert_id();
     }
 
+    public function save_courier_data($data = array())
+    {
+        $this->db->insert('courier_transactions', $data);
+
+        return $this->db->insert_id();
+    }
+
     /**
      * get_my_events
      *

@@ -27,7 +27,7 @@
     						<td><?php echo date("F j, Y", strtotime($val->event_start_date)).' - '.date("F j, Y", strtotime($val->event_end_date)) ?></td>
     						<td><?php echo date("g:i A", strtotime($val->event_start_time)).' - '.date("g:i A", strtotime($val->event_end_time)) ?></td>
     						<td><?php echo ($val->payment_type == 'btc' ? $val->total_amount : round($val->total_amount, 2)).' '. ($val->payment_type == 'btc' ? 'BTC' : $val->currency) ?></td>
-    						<td><?php echo $val->payment_type == 'locally' ? lang('b_bookings_payment_type_lly') : ($val->payment_type == 'stripe' ? lang('b_bookings_payment_type_ipe') : $val->payment_type == 'btc' ? lang('b_bookings_payment_type_btc') : lang('b_bookings_payment_type_pal')); ?> (<?php echo $val->payment_status == 1 ? lang('e_bookings_payment_status_successful') : ($val->payment_status == 2 ? lang('e_bookings_payment_status_failed') : lang('e_bookings_payment_status_pending')); ?>)</td>
+    						<td><?php echo $val->payment_type == 'courier' ? lang('payment_type_courier') : ($val->payment_type == 'stripe' ? lang('b_bookings_payment_type_ipe') : $val->payment_type == 'btc' ? lang('b_bookings_payment_type_btc') : lang('b_bookings_payment_type_pal')); ?> (<?php echo $val->payment_status == 1 ? lang('e_bookings_payment_status_successful') : ($val->payment_status == 2 ? lang('e_bookings_payment_status_failed') : lang('e_bookings_payment_status_pending')); ?>)</td>
     						<td><?php echo $val->txn_id ?></td>
     						<td><?php echo date("F j, Y", strtotime($val->date_added)) ?></td>
                             <td>

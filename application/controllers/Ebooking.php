@@ -387,6 +387,8 @@ class Ebooking extends Public_Controller {
                 redirect(site_url('ebooking/pay_with_stripe'));
             if($payment_method === 'btc_credit')
                 redirect(site_url('ebooking/pay_with_btc'));
+            if($payment_method === 'pay_by_courier')
+                redirect(site_url('ebooking/pay_via_courier'));
             else
                 $this->pay_with_paypal();
         }
@@ -497,7 +499,281 @@ class Ebooking extends Public_Controller {
      $this->load->view($this->template, $data);
     }
 
+    public function pay_via_courier()
+    {
 
+      if(empty($_SESSION['bookings']) || empty($this->session->userdata('logged_in')))
+      {
+          $this->session->set_flashdata('error', lang('e_l_pay_access_denied'));
+          redirect(base_url('events'));
+      }
+      $this->add_plugin_theme(array(
+          "customs/admin-styles.css",
+          "customs/materialize.css",
+      ), 'default')
+      ->add_js_theme("pages/courier/index_i18n.js", TRUE );
+      $this
+      ->add_plugin_theme(array(
+                              "datepicker/bootstrap-datepicker.js",
+                              "datepicker/datepicker3.css",
+                              "node-waves/waves.min.js",
+                              "node-waves/waves.min.css",
+                          ), 'admin')->add_js_theme(array("admin.js","custom_i18n.js"), TRUE );
+
+      $this->set_title(lang('e_bookings_payment_type_courier'));
+      $data = $this->includes;
+
+      //content Data
+      $content_data = array(
+        'user'           =>  $this->user,
+        'details'        =>  $_SESSION['bookings'],
+      );
+
+      $content_data['courier_date']= array(
+          'name'          => 'courier_date',
+          'id'            => 'courier_date',
+          'type'          => 'text',
+          'class'         => 'form-control',
+          'placeholder'   => 'Enter Date',
+      );
+
+      $content_data['courier_start_time_1']= array(
+          'name'          => 'courier_start_time_1',
+          'id'            => 'courier_start_time_1',
+          'class'         => 'form-control show-tick',
+          'options'       => array(
+                              '01' => '01',
+                              '02' => '02',
+                              '03' => '03',
+                              '04' => '04',
+                              '05' => '05',
+                              '06' => '06',
+                              '07' => '07',
+                              '08' => '08',
+                              '09' => '09',
+                              '10' => '10',
+                              '11' => '11',
+                              '12' => '12',
+                          ),
+      );
+
+      $content_data['courier_start_time_2']= array(
+          'name'          => 'courier_start_time_2',
+          'id'            => 'courier_start_time_2',
+          'class'         => 'form-control show-tick',
+          'options'       => array(
+                              '00'  => '00',
+                              '15' => '15',
+                              '30' => '30',
+                              '45' => '45',
+                          ),
+      );
+
+      $content_data['courier_start_time_3']= array(
+          'name'          => 'courier_start_time_3',
+          'id'            => 'courier_start_time_3',
+          'class'         => 'form-control show-tick',
+          'options'       => array(
+                              'AM' => 'AM',
+                              'PM' => 'PM',
+                          ),
+      );
+
+      $content_data['courier_end_time_1']= array(
+          'name'          => 'courier_end_time_1',
+          'id'            => 'courier_end_time_1',
+          'class'         => 'form-control show-tick',
+          'options'       => array(
+                              '01' => '01',
+                              '02' => '02',
+                              '03' => '03',
+                              '04' => '04',
+                              '05' => '05',
+                              '06' => '06',
+                              '07' => '07',
+                              '08' => '08',
+                              '09' => '09',
+                              '10' => '10',
+                              '11' => '11',
+                              '12' => '12',
+                          ),
+      );
+
+      $content_data['courier_end_time_2']= array(
+          'name'          => 'courier_end_time_2',
+          'id'            => 'courier_end_time_2',
+          'class'         => 'form-control show-tick',
+          'options'       => array(
+                              '00'  => '00',
+                              '15' => '15',
+                              '30' => '30',
+                              '45' => '45',
+                          ),
+      );
+
+      $content_data['courier_end_time_3']= array(
+          'name'          => 'courier_end_time_3',
+          'id'            => 'courier_end_time_3',
+          'class'         => 'form-control show-tick',
+          'options'       => array(
+                              'AM' => 'AM',
+                              'PM' => 'PM',
+                          ),
+      );
+
+      $content_data['courier_city']= array(
+          'name'          => 'courier_city',
+          'id'            => 'courier_city',
+          'type'          => 'text',
+          'class'         => 'form-control',
+          'placeholder'   => 'Enter City',
+      );
+
+      $content_data['courier_zip']= array(
+          'name'          => 'courier_zip',
+          'id'            => 'courier_zip',
+          'type'          => 'text',
+          'class'         => 'form-control',
+          'placeholder'   => 'Zip Code',
+      );
+
+      $content_data['courier_address_1']= array(
+          'name'          => 'courier_address_1',
+          'id'            => 'courier_address_1',
+          'type'          => 'text',
+          'class'         => 'form-control',
+          'placeholder'   => 'Enter Address Line 1',
+      );
+
+      $content_data['courier_address_2']= array(
+          'name'          => 'courier_address_2',
+          'id'            => 'courier_address_2',
+          'type'          => 'text',
+          'class'         => 'form-control',
+          'placeholder'   => 'Enter Address Line 2',
+      );
+
+      $content_data['courier_doorbell']= array(
+          'name'          => 'courier_doorbell',
+          'id'            => 'courier_doorbell',
+          'type'          => 'text',
+          'class'         => 'form-control',
+          'placeholder'   => 'Enter Doorbell',
+      );
+
+      $content_data['courier_phone']= array(
+          'name'          => 'courier_phone',
+          'id'            => 'courier_phone',
+          'type'          => 'text',
+          'class'         => 'form-control',
+          'placeholder'   => 'Enter Phone',
+      );
+
+
+      // load views
+      $data['content'] = $this->load->view('courier/index', $content_data, TRUE);
+      $this->load->view($this->template, $data);
+    }
+
+    public function process_courier()
+    {
+      if(empty($_SESSION['bookings']) || empty($this->session->userdata('logged_in')))
+      {
+          $this->session->set_flashdata('error', lang('e_l_pay_access_denied'));
+          redirect(base_url('events'));
+      }
+
+
+      $this->form_validation
+      ->set_rules('courier_date', lang('courier_select_date'), 'trim|required')
+      ->set_rules('courier_start_time', lang('courier_time_range_validation'), 'callback_check_courier_time['.$this->input->post('courier_start_time').']', 'trim|required')
+      ->set_rules('courier_end_time', lang('courier_time_range_validation'), 'callback_check_courier_time['.$this->input->post('courier_end_time').']', 'trim|required')
+      ->set_rules('courier_address_1', lang('courier_address_line_1'), 'trim|required')
+      ->set_rules('courier_address_2', lang('courier_address_line_2'), 'trim|required')
+      ->set_rules('courier_city', lang('courier_address_city_2'), 'trim|required')
+      ->set_rules('courier_zip', lang('courier_address_zip'), 'trim|required')
+      ->set_rules('courier_doorbell', lang('courier_address_doorbell'), 'trim|required')
+      ->set_rules('courier_phone', lang('courier_address_phone'), 'trim|required');
+
+      if($this->form_validation->run() === FALSE)
+      {
+          // for fetching specific fields errors in order to view errors on each field seperately
+          $error_fields = array();
+          foreach($_POST as $key => $val)
+          {
+
+              if(form_error($key))
+                  $error_fields[] = $key;
+          }
+
+          echo json_encode(array('flag'=>0, 'msg' => validation_errors(), 'error_fields'=>json_encode($error_fields)));
+          exit;
+      }
+
+
+      //proceed on saving courier transaction
+      //transaction variables
+			$data                                       = array();
+			$data['payer_email']                        = $this->user['email'];
+			$data['payer_id']                           = $this->user['id'];
+			$data['payer_status']                       = 'Unverified';
+			$data['payer_name']                         = $this->user['username'];
+			$data['payer_address']                      = $this->input->post('courier_address_1').', '.
+																										$this->input->post('courier_address_2').', '.
+																										$this->input->post('courier_city').', '.
+																										$this->input->post('courier_doorbell').', '.
+																										$this->input->post('courier_zip').', '.
+																										$this->input->post('courier_phone');
+			$data['txn_id']                             = substr( str_shuffle( str_repeat( 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', 10 ) ), 0, 10 );
+			$data['currency']                           = $_SESSION['bookings']['currency'];
+			$data['protection_eligibility']             = '';
+			$data['total_amount']                       = $_SESSION['bookings']['booking_fees'];
+			$data['payment_status']                     = 'Pending';
+			$data['payment_type']                       = 'courier';
+			$data['item_name']                          = $_SESSION['bookings']['event_title'];
+			$data['item_number']                        = $_SESSION['bookings']['temp_id'];
+			$data['quantity']                           = 1;
+			$data['txn_type']                           = 'Booking';
+			$data['payment_date']                       = date('Y-m-d', strtotime(str_replace('-', '/', $this->input->post('courier_date'))));;
+			$data['business']                           = '';
+			$data['verify_sign']                        = '';
+
+      //courier data
+      $data_courier                               = array();
+      $data_courier['user_id']                    = $data['payer_id'];
+      $data_courier['event_id']                   = $_SESSION['bookings']['events_id'];
+      $data_courier['amount']                     = $data['total_amount'];
+      $data_courier['tx_date']                    = $data['payment_date'];
+      $data_courier['time_start']                 = $this->input->post('courier_start_time');
+      $data_courier['time_end']                   = $this->input->post('courier_end_time');
+      $data_courier['city']                       = $this->input->post('courier_city');
+      $data_courier['zip']                        = $this->input->post('courier_zip');
+      $data_courier['address_1']                  = $this->input->post('courier_address_1');
+      $data_courier['address_2']                  = $this->input->post('courier_address_2');
+      $data_courier['doorbell']                   = $this->input->post('courier_doorbell');
+      $data_courier['phone']                      = $this->input->post('courier_phone');
+      $data_courier['tx_code']                    = $data['txn_id'];
+
+			$_SESSION['bookings']['txn_id']             = $data['txn_id'];
+
+      // if event the use event bookings model
+      if(isset($_SESSION['bookings']['is_event']))
+      {
+        $_SESSION['bookings']['transactions_id']    = $this->ebookings_model->save_transactions($data);
+        $_SESSION['bookings']['courier_txn_id']     = $this->ebookings_model->save_courier_data($data_courier);
+      }
+      else
+      {
+        $_SESSION['bookings']['transactions_id']    = $this->bbookings_model->save_transactions($data);
+      }
+
+      $_SESSION['bookings']['payment_gateway']    = 'courier';
+
+      if(isset($_SESSION['bookings']['is_event']))
+        echo json_encode(array('flag'=>1));
+        exit;
+
+    }
 
     /**
      * finish_booking
@@ -557,11 +833,11 @@ class Ebooking extends Public_Controller {
         // data for e_bookings_payments
         $payments                       = array();
         $payments['e_bookings_id']        = $data['id'];
-        $payments['paid_amount']        = 0;
+        $payments['paid_amount']        = $_SESSION['bookings']['payment_gateway'] == 'btc' ? $data['net_fees'] : 0;
         $payments['total_amount']       = $_SESSION['bookings']['net_fees'];
         $payments['payment_type']       = $_SESSION['bookings']['payment_gateway'];
         $payments['transactions_id']    = $_SESSION['bookings']['transactions_id'];
-        $payments['payment_status']     = 1;
+        $payments['payment_status']     = $_SESSION['bookings']['payment_gateway'] == 'btc' ? 1 : 0;
         $payments['currency']           = $_SESSION['bookings']['currency'];
         $payments['tax_title']          = $taxes->title;
         $payments['tax_rate_type']      = $taxes->rate_type;
@@ -625,12 +901,29 @@ class Ebooking extends Public_Controller {
             );
 
             //add credit earned by booking
-            $current_earnings = $this->events_model->get_events_by_id($data['events_id'])->event_earned;
-            $update_amount = $current_earnings + $data['net_fees'];
-            $this->event_model->update_event_credits($data['events_id'], $update_amount);
+            if($_SESSION['bookings']['payment_gateway'] == 'btc')
+            {
+              $current_earnings = $this->events_model->get_events_by_id($data['events_id'])->event_earned;
+              $update_amount = $current_earnings + $data['net_fees'];
+            }
+            else
+            {
+              $current_earnings = $this->events_model->get_events_by_id($data['events_id'])->event_earned;
+              $update_amount = $current_earnings;
+            }
 
+            $this->event_model->update_event_credits($data['events_id'], $update_amount);
             $this->notifications_model->save_notifications($notification);
-            $this->session->set_flashdata('message', lang('e_l_booking_success'));
+
+            if($_SESSION['bookings']['payment_gateway'] == 'courier')
+            {
+              $this->session->set_flashdata('message', lang('courier_payment_success'));
+            }
+            else
+            {
+              $this->session->set_flashdata('message', lang('e_l_booking_success'));
+            }
+
             redirect(base_url('ebooking/booking_complete'));
         }
         else
@@ -650,6 +943,11 @@ class Ebooking extends Public_Controller {
         if(empty($_SESSION['bookings']))
             redirect('');
 
+        if($_SESSION['bookings']['payment_gateway'] == 'btc')
+        {
+          $this->session->set_flashdata('message', lang('e_l_booking_success'));
+        }
+
         unset($_SESSION['bookings']);
         unset($_SESSION['redirect_url']);
          // setup page header data
@@ -660,6 +958,27 @@ class Ebooking extends Public_Controller {
         // load views
         $data['content'] = $this->load->view('booking_complete', NULL, TRUE);
         $this->load->view($this->template, $data);
+    }
+
+    //check time callback
+    function check_courier_time($time)
+    {
+      //check time if between 9AM to 9PM
+      $couriertime = DateTime::createFromFormat('H:i A', $time);
+
+      $starttime        = DateTime::createFromFormat('H:i A', "9:00 AM");
+      $endtime          = DateTime::createFromFormat('H:i A', "9:00 PM");
+
+      if($couriertime < $starttime  || $couriertime > $endtime)
+      {
+        $this->form_validation->set_message('check_courier_time', lang('courier_process_time_error'));
+        return false;
+      }
+      else
+      {
+        return true;
+      }
+
     }
 
 }
